@@ -2,10 +2,10 @@
   "dockerfile_lines": [],
   "graphs": {
     
-    "doctor_appointment": "./doctor_appointment.py:graph"
+    "doctor_appointment": "./doctor.py:react_graph_memory"
   },
   "env": "./.env",
-  "python_version": "3.11",
+  "python_version": "3.12",
   "dependencies": [
     "."
   ]
