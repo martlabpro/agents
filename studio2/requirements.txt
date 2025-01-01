@@ -1,0 +1,11 @@
+langgraph
+langchain-core
+langchain-community
+langchain-openai
+langchain-google-genai
+sqlmodel
+psycopg2-binary
+pydantic
+langgraph-checkpoint-sqlite
+langchain_core
+bcrypt
