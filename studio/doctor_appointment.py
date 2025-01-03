@@ -218,7 +218,7 @@ def delete_doctor(doctor_id: int) -> bool:
 
 def book_appointment(data: Appointment) -> Optional[Dict[str, Any]]:
     """
-    Booked appointment and asked patient during interrup what email nodification if yes than tool send_notification is called.
+    Booked appointment and return notification_status.
     """
     with Session(engine) as session:
         # Fetch user details from the User table based on the patient's username
