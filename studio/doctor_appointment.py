@@ -226,7 +226,7 @@ def book_appointment(data: Appointment) -> Optional[Dict[str, Any]]:
         if not user:
             raise ValueError(f"User with username '{data.patient_name}' not found.")
 
-        # Insert appointment into the database
+        # Create and save the appointment in the database
         appointment = Appointment(
             doctor_id=data.doctor_id,
             patient_name=user.username,  # Use username as patient_name
@@ -240,16 +240,20 @@ def book_appointment(data: Appointment) -> Optional[Dict[str, Any]]:
         session.commit()
         session.refresh(appointment)
 
-        # Trigger the NodeInterrupt for confirmation
+        # Trigger user confirmation for sending an email notification
         print("Raising NodeInterrupt; waiting for confirmation.")
-        notification_status = interrupt("Do you want me to send email notification? yes/no")
+        notification_status = interrupt("Do you want me to send email notification? yes/no").lower()
 
-        if notification_status == "yes":
-            appointment.send_notification = True
-            session.add(appointment)
-            session.commit()
-
-        return {"appointment_id": appointment.id, "notification_status": appointment.send_notification}
+        if notification_status in ["yes", "true"]:
+            # Send the email notification
+            return send_notification(appointment.id, True)
+        else:
+            print("User declined to send email notification.")
+            return {
+                "appointment_id": appointment.id,
+                "status": appointment.status,
+                "send_notification": False
+            }
 
 def send_notification(appointment_id: int, notification_status: bool) -> Optional[Dict[str, Any]]:
     """
@@ -278,7 +282,7 @@ def send_notification(appointment_id: int, notification_status: bool) -> Optiona
         if notification_status:
             send_email(
                 "Appointment Confirmation",
-                f"Your appointment with Dr. {doctor.name} on {appointment.date} at {appointment.time} is confirmed.",
+                f"Your appointment with {doctor.name} on {appointment.date} at {appointment.time} is confirmed.",
                 appointment.patient_email,  # Use the updated field
             )
             print(f"Email notification sent to {appointment.patient_email}")
@@ -435,12 +439,12 @@ tools = [
     delete_doctor,
     get_all_doctors,          # Newly added function to get all doctors
     book_appointment,
-    send_notification,
+    # send_notification,
     get_appointments_by_user,
     get_appointment,          # Newly added function to get a specific appointment
     update_appointment,
     delete_appointment,
-    send_email,
+    # send_email,
     get_appointments_by_patient_name
 ]
 
