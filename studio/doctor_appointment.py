@@ -241,7 +241,6 @@ def book_appointment(data: Appointment) -> Optional[Dict[str, Any]]:
         session.refresh(appointment)
 
         # Trigger user confirmation for sending an email notification
-        print("Raising NodeInterrupt; waiting for confirmation.")
         notification_status = interrupt("Do you want me to send email notification? yes/no").lower()
 
         if notification_status in ["yes", "true"]:
@@ -252,7 +251,8 @@ def book_appointment(data: Appointment) -> Optional[Dict[str, Any]]:
             return {
                 "appointment_id": appointment.id,
                 "status": appointment.status,
-                "send_notification": False
+                "send_notification": False,
+                "message":"You email is not send"
             }
 
 def send_notification(appointment_id: int, notification_status: bool) -> Optional[Dict[str, Any]]:
@@ -281,7 +281,7 @@ def send_notification(appointment_id: int, notification_status: bool) -> Optiona
         # Step 4: Handle email notification if confirmed
         if notification_status:
             send_email(
-                "Appointment Confirmation",
+                f"Appointment Confirmation with {doctor.name}",
                 f"Your appointment with {doctor.name} on {appointment.date} at {appointment.time} is confirmed.",
                 appointment.patient_email,  # Use the updated field
             )
